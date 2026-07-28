@@ -1,0 +1,6 @@
+# Vendored, pinned UTS-46 sources (see internal/x/README.md). The pin-drift
+# workflow alerts when upstream advances; re-vendor DELIBERATELY (bump here +
+# Unicode() + migrate), never auto-update — the A-label is a lookup key.
+golang.org/x/net v0.40.0
+golang.org/x/text v0.25.0
+unicode 15.0.0

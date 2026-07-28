@@ -1,0 +1,24 @@
+name: pin-drift
+on:
+  schedule: [{ cron: "0 6 * * 1" }]   # weekly, Monday 06:00 UTC
+  workflow_dispatch: {}
+permissions:
+  issues: write
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # ALERT-ONLY: UTS-46 is a lookup-key mapping, so a re-vendor is a deliberate,
+      # migrated change. This opens an issue when upstream x/net moves past the pin;
+      # it never edits the vendored tree.
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pinned=$(awk '/^golang.org\/x\/net /{print $2}' VENDOR)
+          latest=$(curl -fsSL https://proxy.golang.org/golang.org/x/net/@latest | sed -n 's/.*"Version":"\([^"]*\)".*/\1/p')
+          echo "pinned=$pinned latest=$latest"
+          [ -n "$latest" ] && [ "$latest" != "$pinned" ] || { echo "no drift"; exit 0; }
+          title="idna: x/net drift — vendored $pinned, latest $latest"
+          gh issue list --state open --search "in:title $title" | grep -q . && { echo "issue exists"; exit 0; }
+          gh issue create --title "$title" --body "Vendored golang.org/x/net is pinned at **$pinned**; upstream latest is **$latest**. UTS-46 is a lookup-key mapping — re-vendor DELIBERATELY (bump VENDOR + Unicode() + migrate per the drift model in doc.go), do not auto-update."
