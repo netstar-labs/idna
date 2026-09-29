@@ -15,22 +15,26 @@ directly. Expected for a byte-faithful vendor copy; not a finding.
 
 ## Top line
 
-Two real, adversarially-confirmed correctness bugs in the owned wrapper (both are
-public-API-behavior changes and are **deferred pending your explicit go-ahead**, not
-applied). Four low-risk fixes applied in this pass (a duplicated constant, two
-doc-drift issues, and documentation of two previously-undocumented edge behaviors).
-No simplification or dedup opportunities cleared the bar for action.
+Two real, adversarially-confirmed correctness bugs in the owned wrapper — both public
+API behavior changes, filed as their own issues and fixed on this branch after
+explicit scope confirmation. Four additional low-risk fixes applied in the same pass
+(a duplicated constant, two doc-drift issues, and documentation of two
+previously-undocumented edge behaviors). No simplification or dedup opportunities
+cleared the bar for action.
 
-## CONFIRMED — deferred, need your scope decision
+## CONFIRMED — fixed on this branch (own commits, own issues)
 
-| # | Finding | Why it's a behavior-boundary change |
-|---|---|---|
-| C-1 | `ToASCII`/`ToASCIIErr` silently accept invalid UTF-8 bytes (U+FFFD-substitute + encode, no error) — contradicts the documented "ok is false when malformed" contract. Fix: `utf8.ValidString(host)` guard. | Previously-accepted (malformed) inputs would start being rejected — an input-acceptance change on the public API. |
-| C-2 | `ToUnicode` has no `allowUnderscore` param, so it can't round-trip a host `ToASCII(..., true)` (loose profile) just accepted — e.g. `_dmarc.example.com`. Fix: add the parameter, mirroring `ToASCII`. | Adds a parameter to a public function signature — breaking for every existing caller. |
+| # | Finding | Issue | Status |
+|---|---|---|---|
+| C-1 | `ToASCII`/`ToASCIIErr` silently accepted invalid UTF-8 bytes (U+FFFD-substitute + encode, no error) — contradicted the documented "ok is false when malformed" contract. | #4 | **Fixed** — `utf8.ValidString(host)` guard added to `ToASCII`/`ToASCIIErr`/`ToUnicode`. Input-acceptance change: previously-accepted malformed input is now rejected. |
+| C-2 | `ToUnicode` had no `allowUnderscore` param, so it couldn't round-trip a host `ToASCII(..., true)` (loose profile) just accepted — e.g. `_dmarc.example.com`. | #5 | **Fixed** — `ToUnicode(host string, allowUnderscore bool)`, mirroring `ToASCII`. Breaking signature change for every existing caller — flagged for human sign-off, not self-merged. |
 
 Full reproductions, root-cause tracing, and the adversarial-skeptic verification
 transcripts for both are in `audit-correctness.md`. Both survived an independent
-skeptic explicitly tasked with refuting them; neither could be refuted.
+skeptic explicitly tasked with refuting them before being fixed; neither could be
+refuted. Both fixes carry their own regression tests, sabotage-verified (each test
+confirmed to fail against the pre-fix code with an attributable message, then pass
+restored).
 
 ## Applied in this pass (low-risk, no public-behavior change)
 

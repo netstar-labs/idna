@@ -49,8 +49,10 @@ public API does, so the leak is real.
 
 **Verdict: CONFIRMED** (independent adversarial skeptic could not refute; reproduced
 twice from different scratch modules, negative controls rule out alternative
-explanations). **This changes accepted-input behavior — public API boundary. Deferred
-pending explicit scope confirmation, not applied in this pass.**
+explanations). **Fixed — issue #4, commit on `audit/a1-idna`.** Regression test added
+and sabotage-verified (reverting the guard makes the test fail with an attributable
+message; restoring passes). This is an accepted-input behavior change on the public
+API — previously-accepted malformed input is now rejected.
 
 ---
 
@@ -95,8 +97,10 @@ that does.
 `ToASCII`'s signature exactly, selecting `strict`/`loose` the same way.
 
 **Verdict: CONFIRMED** (independent adversarial skeptic could not refute).
-**This is a public function-signature change — breaking for every existing caller.
-Deferred pending explicit scope confirmation, not applied in this pass.**
+**Fixed — issue #5, commit on `audit/a1-idna`.** Regression test added and
+sabotage-verified. This is a public function-signature change — breaking for every
+existing caller — flagged for human sign-off per house review discipline rather than
+self-merged.
 
 ## MINOR (documented, not changed, in this pass)
 
