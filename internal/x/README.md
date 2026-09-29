@@ -51,7 +51,8 @@ alone does not stop both:
    remove that coupling entirely, the lower-version table variants were deleted
    and the `//go:build go1.x` selectors stripped from the Unicode-15 files that
    remain. No version selector is left in the vendored stack
-   (`grep -r '//go:build go1' internal/x` → nothing), so **every toolchain
+   (`grep -r '//go:build go1' internal/x --include='*.go'` → nothing — scoped to
+   `.go` files, since an unscoped grep also matches this sentence), so **every toolchain
    compiles Unicode 15** — the mapping is pinned to Unicode 15 outright, not
    merely for Go ≥ 1.21. (Filenames like `tables15.0.0.go` are kept as-is; they
    just record the Unicode/Go era the code came from.)

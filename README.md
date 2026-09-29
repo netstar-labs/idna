@@ -10,10 +10,18 @@ idna.ToASCII("faß.de", false)    // ("xn--fa-hia.de", true)   — non-transitio
 idna.ToASCII("_dmarc.x.com", false) // ("", false)            — STD3 rejects underscore
 idna.ToASCII("_dmarc.x.com", true)  // ("_dmarc.x.com", true) — loose profile
 
-idna.ToASCIIErr("公司.cn")        // ("xn--55qx5d.cn", nil)    — seam shape for normie.Options.IDNA
-idna.ToUnicode("xn--55qx5d.cn")   // ("公司.cn", true)          — U-label for UTS-39 skeletoning
-idna.Unicode()                    // "15.0.0"                  — the pin; stamp it on stored A-labels
+idna.ToASCIIErr("公司.cn")             // ("xn--55qx5d.cn", nil) — seam shape for normie.Options.IDNA
+idna.ToUnicode("xn--55qx5d.cn", false) // ("公司.cn", true)      — U-label for UTS-39 skeletoning
+idna.Unicode()                         // "15.0.0"               — the pin; stamp it on stored A-labels
 ```
+
+## Documentation
+
+- **Start here** — [docs/introduction.md](docs/introduction.md) ·
+  [docs/executive-summary.md](docs/executive-summary.md)
+- **Deep dive** — [docs/architecture.md](docs/architecture.md)
+- **Operations** — [docs/userguide.md](docs/userguide.md) ·
+  [internal/x/README.md](internal/x/README.md) (vendor + re-vendor procedure)
 
 ## Why this exists
 
