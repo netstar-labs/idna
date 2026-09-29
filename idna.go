@@ -1,6 +1,19 @@
 package idna
 
-import xidna "github.com/netstar-labs/idna/internal/x/net/idna"
+import (
+	"errors"
+	"unicode/utf8"
+
+	xidna "github.com/netstar-labs/idna/internal/x/net/idna"
+)
+
+// errInvalidUTF8 is returned when host contains a byte sequence that isn't valid
+// UTF-8. The vendored profile does not treat this as an error itself — an illegal
+// leading byte and an unassigned Unicode codepoint share the same silent
+// U+FFFD-substitution path internally (see internal/x/net/idna's validateAndMap),
+// so a malformed host would otherwise encode to a plausible-looking A-label with
+// ok=true, which silently violates the "malformed input" contract below.
+var errInvalidUTF8 = errors.New("idna: host is not valid UTF-8")
 
 // strict and loose are the shared idna profiles. Both use non-transitional
 // (UTS-46) processing, so deviation characters resolve as browsers and registries
@@ -30,6 +43,9 @@ func Unicode() string { return xidna.UnicodeVersion }
 // leading/consecutive-dot labels (".", "..example.com") pass through unchanged. A
 // caller that needs those invariants must check them separately.
 func ToASCII(host string, allowUnderscore bool) (ascii string, ok bool) {
+	if !utf8.ValidString(host) {
+		return "", false
+	}
 	p := strict
 	if allowUnderscore {
 		p = loose
@@ -46,6 +62,9 @@ func ToASCII(host string, allowUnderscore bool) (ascii string, ok bool) {
 // Options.IDNA (func(host string) (string, error)). Use [ToASCII] with
 // allowUnderscore for the loose profile.
 func ToASCIIErr(host string) (string, error) {
+	if !utf8.ValidString(host) {
+		return "", errInvalidUTF8
+	}
 	return strict.ToASCII(host)
 }
 
@@ -53,6 +72,9 @@ func ToASCIIErr(host string) (string, error) {
 // form) — the input UTS-39 confusable analysis (skeletoning) runs on. ok is false
 // when host is not a valid A-label.
 func ToUnicode(host string) (unicode string, ok bool) {
+	if !utf8.ValidString(host) {
+		return "", false
+	}
 	u, err := strict.ToUnicode(host)
 	if err != nil {
 		return "", false

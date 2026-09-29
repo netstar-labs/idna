@@ -34,6 +34,33 @@ func TestToASCIIErr(t *testing.T) {
 	}
 }
 
+// A lone illegal UTF-8 byte must not silently encode to a plausible-looking
+// A-label: the vendored profile substitutes U+FFFD and reports no error for it
+// internally (the same code path unassigned codepoints take), so ToASCII/
+// ToASCIIErr must catch it themselves rather than forward that silent success.
+func TestToASCIIRejectsInvalidUTF8(t *testing.T) {
+	host := "exa" + string([]byte{0x80}) + "mple.com"
+	if a, ok := ToASCII(host, false); ok {
+		t.Errorf("ToASCII(invalid UTF-8) = (%q, true), want ok=false", a)
+	}
+	if a, err := ToASCIIErr(host); err == nil {
+		t.Errorf("ToASCIIErr(invalid UTF-8) = (%q, nil), want an error", a)
+	}
+	// control: a real, validly-encoded U+FFFD must still be rejected too
+	// (proves the guard doesn't just special-case the replacement rune).
+	if _, ok := ToASCII("exa�mple.com", false); ok {
+		t.Error("ToASCII(real U+FFFD) = ok=true, want ok=false")
+	}
+}
+
+// ToUnicode shares ToASCII's UTF-8 guard.
+func TestToUnicodeRejectsInvalidUTF8(t *testing.T) {
+	host := "exa" + string([]byte{0x80}) + "mple.com"
+	if u, ok := ToUnicode(host); ok {
+		t.Errorf("ToUnicode(invalid UTF-8) = (%q, true), want ok=false", u)
+	}
+}
+
 func TestToUnicodeRoundTrip(t *testing.T) {
 	// A-label -> U-label, the form UTS-39 skeletoning consumes.
 	if u, ok := ToUnicode("xn--55qx5d.cn"); !ok || u != "公司.cn" {
