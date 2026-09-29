@@ -15,6 +15,14 @@ idna.ToUnicode("xn--55qx5d.cn")   // ("公司.cn", true)          — U-label fo
 idna.Unicode()                    // "15.0.0"                  — the pin; stamp it on stored A-labels
 ```
 
+## Documentation
+
+- **Start here** — [docs/introduction.md](docs/introduction.md) ·
+  [docs/executive-summary.md](docs/executive-summary.md)
+- **Deep dive** — [docs/architecture.md](docs/architecture.md)
+- **Operations** — [docs/userguide.md](docs/userguide.md) ·
+  [internal/x/README.md](internal/x/README.md) (vendor + re-vendor procedure)
+
 ## Why this exists
 
 One implementation, one pin, both consumers. `sanitize` (host rectify + TLD/apex)
