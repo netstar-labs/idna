@@ -2,10 +2,6 @@ package idna
 
 import xidna "github.com/netstar-labs/idna/internal/x/net/idna"
 
-// unicodeVersion is the Unicode version the vendored UTS-46 tables are pinned to
-// (internal/x/net/idna/tables15.0.0.go). Bump it in lockstep with a re-vendor.
-const unicodeVersion = "15.0.0"
-
 // strict and loose are the shared idna profiles. Both use non-transitional
 // (UTS-46) processing, so deviation characters resolve as browsers and registries
 // now handle them (faß.de -> xn--fa-hia.de, not fass.de). strict enforces STD3
@@ -17,16 +13,22 @@ var (
 	loose  = xidna.New(xidna.MapForLookup(), xidna.Transitional(false), xidna.StrictDomainName(false))
 )
 
-// Unicode reports the Unicode version the vendored UTS-46 tables are pinned to.
+// Unicode reports the Unicode version the vendored UTS-46 tables are pinned to
+// (internal/x/net/idna/tables15.0.0.go, bumped in lockstep with a re-vendor).
 // Stamp it onto every stored A-label / hash / artifact so a later re-vendor is
 // detectable as skew rather than a silent miss — the A-label is a lookup key and a
 // changed mapping produces a stale one (see the drift model in the package doc).
-func Unicode() string { return unicodeVersion }
+func Unicode() string { return xidna.UnicodeVersion }
 
 // ToASCII converts host to its canonical punycode A-label. When allowUnderscore is
 // true, STD3 ASCII rules are relaxed so underscore (and other non-LDH ASCII that
 // UTS-46 permits) validate. ok is false when the label is not a valid idna name,
 // in which case the caller should treat host as malformed.
+//
+// ok=true does not by itself imply an RFC 1035-conformant name: neither profile
+// enforces the 63-octet label / 253-octet name length limit, and empty or
+// leading/consecutive-dot labels (".", "..example.com") pass through unchanged. A
+// caller that needs those invariants must check them separately.
 func ToASCII(host string, allowUnderscore bool) (ascii string, ok bool) {
 	p := strict
 	if allowUnderscore {
