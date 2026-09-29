@@ -56,15 +56,36 @@ func TestToASCIIRejectsInvalidUTF8(t *testing.T) {
 // ToUnicode shares ToASCII's UTF-8 guard.
 func TestToUnicodeRejectsInvalidUTF8(t *testing.T) {
 	host := "exa" + string([]byte{0x80}) + "mple.com"
-	if u, ok := ToUnicode(host); ok {
-		t.Errorf("ToUnicode(invalid UTF-8) = (%q, true), want ok=false", u)
+	if u, ok := ToUnicode(host, false); ok {
+		t.Errorf("ToUnicode(invalid UTF-8, false) = (%q, true), want ok=false", u)
 	}
 }
 
 func TestToUnicodeRoundTrip(t *testing.T) {
 	// A-label -> U-label, the form UTS-39 skeletoning consumes.
-	if u, ok := ToUnicode("xn--55qx5d.cn"); !ok || u != "公司.cn" {
-		t.Errorf("ToUnicode(xn--55qx5d.cn) = (%q, %v), want (公司.cn, true)", u, ok)
+	if u, ok := ToUnicode("xn--55qx5d.cn", false); !ok || u != "公司.cn" {
+		t.Errorf("ToUnicode(xn--55qx5d.cn, false) = (%q, %v), want (公司.cn, true)", u, ok)
+	}
+}
+
+// A host ToASCII(host, true) accepts under the loose profile must round-trip
+// through ToUnicode with the same allowUnderscore=true — the one documented
+// motivating case for the loose profile (_dmarc/_sip._tcp service labels) must
+// not be a dead end for a caller that later needs the U-label.
+func TestToUnicodeRoundTripsLooseUnderscoreHost(t *testing.T) {
+	for _, host := range []string{"_dmarc.example.com", "_sip._tcp.example.com"} {
+		ascii, ok := ToASCII(host, true)
+		if !ok {
+			t.Fatalf("ToASCII(%q, true) = ok=false, want true (test setup assumption broken)", host)
+		}
+		u, ok := ToUnicode(ascii, true)
+		if !ok || u != host {
+			t.Errorf("ToUnicode(%q, true) = (%q, %v), want (%q, true)", ascii, u, ok, host)
+		}
+		// strict (allowUnderscore=false) must still reject it — the loose bit is load-bearing.
+		if _, ok := ToUnicode(ascii, false); ok {
+			t.Errorf("ToUnicode(%q, false) = ok=true, want false (STD3 should reject underscore)", ascii)
+		}
 	}
 }
 

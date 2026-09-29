@@ -27,7 +27,8 @@ Unicode **15.0.0**, on purpose, independent of whatever Go version compiles it.
 Every other IDNA implementation available to this toolkit ties its Unicode
 version to *either* a dependency version *or* a Go build tag — often both at
 once, invisibly. This one ties it to neither: the pin lives in exactly one place
-(`unicodeVersion` in `idna.go`), advances only when someone deliberately re-vendors,
+(`xidna.UnicodeVersion`, generated from the vendored table file and reported
+verbatim by `idna.Unicode()`), advances only when someone deliberately re-vendors,
 and is queryable at runtime via `Unicode()` so every stored A-label can carry the
 pin it was produced under.
 

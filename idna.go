@@ -69,13 +69,20 @@ func ToASCIIErr(host string) (string, error) {
 }
 
 // ToUnicode converts an A-label back to its U-label (the pre-punycode Unicode
-// form) — the input UTS-39 confusable analysis (skeletoning) runs on. ok is false
-// when host is not a valid A-label.
-func ToUnicode(host string) (unicode string, ok bool) {
+// form) — the input UTS-39 confusable analysis (skeletoning) runs on. allowUnderscore
+// mirrors [ToASCII]'s profile selection, so a host ToASCII(host, true) accepted under
+// the loose profile (_dmarc, _sip._tcp) round-trips here instead of failing under
+// strict STD3 rules it was never validated against. ok is false when host is not a
+// valid A-label under the selected profile.
+func ToUnicode(host string, allowUnderscore bool) (unicode string, ok bool) {
 	if !utf8.ValidString(host) {
 		return "", false
 	}
-	u, err := strict.ToUnicode(host)
+	p := strict
+	if allowUnderscore {
+		p = loose
+	}
+	u, err := p.ToUnicode(host)
 	if err != nil {
 		return "", false
 	}

@@ -75,8 +75,10 @@ deliberately distinct:
   assigns after the pin. Vendoring cannot fix this; it can only make the
   trade-off explicit and the pin visible (`Unicode()`).
 
-A re-vendor is a deliberate migration, not an update: bump `VENDOR` and
-`unicodeVersion`, diff the mapping tables for the ranges that actually changed,
+A re-vendor is a deliberate migration, not an update: bump `VENDOR` and the
+generated table file (`Unicode()` reads `xidna.UnicodeVersion` from it directly,
+so there is no separate copy to keep in sync), diff the mapping tables for the
+ranges that actually changed,
 and recompute only the non-ASCII rows those ranges affect — guided by
 `Result.HadNonASCII`-style flags in a consuming corpus (see `normie`'s
 architecture doc for the caller-side half of this).

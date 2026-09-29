@@ -33,7 +33,9 @@ freely) is deliberately a separate, unrelated concern.
 **Shape.** `ToASCII(host, allowUnderscore) (string, bool)` — strict STD3 or a
 loose profile that admits underscore labels (`_dmarc`, `_sip._tcp`).
 `ToASCIIErr(host) (string, error)` is the same strict profile shaped as an
-injectable seam (e.g. `normie`'s `Options.IDNA`). `ToUnicode(host) (string,
-bool)` recovers the U-label. `Unicode() string` reports the pin ("15.0.0") to
+injectable seam (e.g. `normie`'s `Options.IDNA`). `ToUnicode(host,
+allowUnderscore) (string, bool)` recovers the U-label, selecting the same
+strict/loose profile as `ToASCII` so a loose-accepted host round-trips.
+`Unicode() string` reports the pin ("15.0.0") to
 stamp on every stored artifact, so a future re-vendor is detectable as skew
 during a rolling deploy instead of a silent, unmarked change in meaning.
