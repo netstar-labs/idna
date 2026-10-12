@@ -13,7 +13,7 @@ itself (`internal/x/net/LICENSE`, `internal/x/text/LICENSE`), per clause 1.
 ## golang.org/x/net (vendored under `internal/x/net/`)
 
 - **Upstream:** https://pkg.go.dev/golang.org/x/net
-- **Pinned version:** v0.40.0 (see `VENDOR`)
+- **Pinned version:** v0.61.0 (see `VENDOR`)
 - **License:** BSD-3-Clause
 
 ```
@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## golang.org/x/text (vendored under `internal/x/text/`)
 
 - **Upstream:** https://pkg.go.dev/golang.org/x/text
-- **Pinned version:** v0.25.0 (see `VENDOR`)
+- **Pinned version:** v0.43.0 (see `VENDOR`)
 - **License:** BSD-3-Clause
 
 ```

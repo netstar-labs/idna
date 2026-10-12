@@ -90,7 +90,29 @@ func TestToUnicodeRoundTripsLooseUnderscoreHost(t *testing.T) {
 }
 
 func TestUnicodePin(t *testing.T) {
-	if Unicode() != "15.0.0" {
-		t.Errorf("Unicode() = %q, want 15.0.0 (bump in lockstep with a re-vendor)", Unicode())
+	if Unicode() != "17.0.0" {
+		t.Errorf("Unicode() = %q, want 17.0.0 (bump in lockstep with a re-vendor)", Unicode())
+	}
+}
+
+// TestUnicode17Changes pins the three behaviour changes the Unicode 15 -> 17 re-vendor
+// introduced (internal/x/README.md, "Re-vendor log"), so a future re-vendor that moves any of
+// them fails here instead of silently re-keying stored A-labels.
+func TestUnicode17Changes(t *testing.T) {
+	for _, tc := range []struct{ in, want string }{
+		// U+1E9E capital sharp s: mapped to "ss" under 15, to U+00DF under 17. The one change
+		// that re-keys a label that was already valid.
+		{"ẞ", "xn--zca"},
+		{"straẞe.de", "xn--strae-oqa.de"},
+		// invisible format characters, rejected under 15, are ignored under 17
+		{"exam⁡ple.com", "example.com"},
+		{"examㅤple.com", "example.com"},
+		// U+2260 NOT EQUAL TO, rejected under 15, valid under 17
+		{"≠", "xn--1ch"},
+	} {
+		got, err := ToASCIIErr(tc.in)
+		if err != nil || got != tc.want {
+			t.Errorf("ToASCIIErr(%q) = %q, %v; want %q", tc.in, got, err, tc.want)
+		}
 	}
 }

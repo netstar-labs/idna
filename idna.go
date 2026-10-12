@@ -27,7 +27,7 @@ var (
 )
 
 // Unicode reports the Unicode version the vendored UTS-46 tables are pinned to
-// (internal/x/net/idna/tables15.0.0.go, bumped in lockstep with a re-vendor).
+// (internal/x/net/idna/tables17.0.0.go, bumped in lockstep with a re-vendor).
 // Stamp it onto every stored A-label / hash / artifact so a later re-vendor is
 // detectable as skew rather than a silent miss — the A-label is a lookup key and a
 // changed mapping produces a stale one (see the drift model in the package doc).

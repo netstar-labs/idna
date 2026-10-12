@@ -12,7 +12,7 @@ idna.ToASCII("_dmarc.x.com", true)  // ("_dmarc.x.com", true) — loose profile
 
 idna.ToASCIIErr("公司.cn")             // ("xn--55qx5d.cn", nil) — seam shape for normie.Options.IDNA
 idna.ToUnicode("xn--55qx5d.cn", false) // ("公司.cn", true)      — U-label for UTS-39 skeletoning
-idna.Unicode()                         // "15.0.0"               — the pin; stamp it on stored A-labels
+idna.Unicode()                         // "17.0.0"               — the pin; stamp it on stored A-labels
 ```
 
 ## Documentation
@@ -30,7 +30,7 @@ and `normie` (URL canonicalization, via its `Options.IDNA` seam) both need UTS-4
 Two independently-pinned copies could resolve the same host to different A-labels —
 a stale-key / silent-miss hazard across ingest and query. This repo vendors
 `x/net/idna` (+ the `x/text` packages it needs) **in-tree** under
-[`internal/x`](internal/x/README.md), pinned to **Unicode 15.0.0** independent of
+[`internal/x`](internal/x/README.md), pinned to **Unicode 17.0.0** independent of
 the Go toolchain, behind a thin owned policy layer.
 
 ## The drift model
@@ -54,7 +54,7 @@ separate package.
 | Path | Purpose |
 |---|---|
 | [idna.go](idna.go) | the policy layer — `ToASCII` (strict/loose STD3), `ToASCIIErr`, `ToUnicode`, `Unicode` |
-| [internal/x/](internal/x/README.md) | vendored, pruned `x/net/idna` + `x/text`, pinned Unicode 15.0.0 |
+| [internal/x/](internal/x/README.md) | vendored, pruned `x/net/idna` + `x/text`, pinned Unicode 17.0.0 |
 
 Go module `github.com/netstar-labs/idna`. Standard library only (the `x/*` code is
 vendored, not a dependency). Build with `GOWORK=off`.

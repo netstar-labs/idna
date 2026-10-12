@@ -2,7 +2,7 @@
 
 **What it is.** A pure-Go, zero-external-dependency library that maps a Unicode
 host to its canonical punycode A-label and back (UTS-46), vendored in-tree from
-`golang.org/x/net/idna` and pinned to Unicode 15.0.0 independent of the Go
+`golang.org/x/net/idna` and pinned to Unicode 17.0.0 independent of the Go
 toolchain.
 
 **Why it exists.** Two consumers in the netstar toolkit — `sanitize` (host
@@ -36,6 +36,6 @@ loose profile that admits underscore labels (`_dmarc`, `_sip._tcp`).
 injectable seam (e.g. `normie`'s `Options.IDNA`). `ToUnicode(host,
 allowUnderscore) (string, bool)` recovers the U-label, selecting the same
 strict/loose profile as `ToASCII` so a loose-accepted host round-trips.
-`Unicode() string` reports the pin ("15.0.0") to
+`Unicode() string` reports the pin ("17.0.0") to
 stamp on every stored artifact, so a future re-vendor is detectable as skew
 during a rolling deploy instead of a silent, unmarked change in meaning.

@@ -15,7 +15,7 @@ a, err := idna.ToASCIIErr("公司.cn")  // ("xn--55qx5d.cn", nil) — seam shape
 u, ok := idna.ToUnicode("xn--55qx5d.cn", false)  // ("公司.cn", true) — U-label for UTS-39 skeletoning
 u, ok  = idna.ToUnicode("_dmarc.example.com", true) // ("_dmarc.example.com", true) — loose round-trip
 
-idna.Unicode()  // "15.0.0" — stamp this on every stored A-label / hash
+idna.Unicode()  // "17.0.0" — stamp this on every stored A-label / hash
 ```
 
 ### API
@@ -25,7 +25,7 @@ idna.Unicode()  // "15.0.0" — stamp this on every stored A-label / hash
 | `ToASCII(host string, allowUnderscore bool) (ascii string, ok bool)` | Canonical A-label. `allowUnderscore=true` relaxes STD3 so `_dmarc`/`_sip._tcp` labels validate. `ok=false` means `host` is not a valid IDNA name — treat it as malformed, not as an empty result. |
 | `ToASCIIErr(host string) (string, error)` | Strict-profile `ToASCII`, `(string, error)`-shaped for wiring directly into an injected seam such as `normie`'s `Options.IDNA`. |
 | `ToUnicode(host string, allowUnderscore bool) (unicode string, ok bool)` | A-label back to U-label — the pre-punycode form UTS-39 confusable analysis runs on. `allowUnderscore` mirrors `ToASCII`'s profile selection, so a host accepted under the loose profile round-trips instead of failing under STD3 rules it was never validated against. |
-| `Unicode() string` | The pinned Unicode version (`"15.0.0"`). Stamp it on every stored A-label/hash so a later re-vendor is detectable as skew, not a silent miss. |
+| `Unicode() string` | The pinned Unicode version (`"17.0.0"`). Stamp it on every stored A-label/hash so a later re-vendor is detectable as skew, not a silent miss. |
 
 Both `strict` and `loose` profiles are immutable package-level values, safe for
 concurrent use — there is no per-call setup cost and no shared mutable state to
@@ -51,7 +51,7 @@ non-transitional deviation-character handling (`faß.de`, `münchen.de`), the
 rejection (`ToASCII`/`ToASCIIErr`/`ToUnicode` all reject malformed bytes rather
 than silently substituting U+FFFD), the `ToUnicode` round trip in both the
 strict and loose-underscore case, and a pin assertion (`Unicode() ==
-"15.0.0"`) that must be updated deliberately alongside any re-vendor.
+"17.0.0"`) that must be updated deliberately alongside any re-vendor.
 
 ## Operations: re-vendoring (the only day-2 procedure this repo has)
 
@@ -70,7 +70,7 @@ first-party under `internal/x/`):
    with `grep -r '//go:build go1' internal/x --include='*.go'` returning nothing
    (scope to `.go` files — an unscoped grep also matches this instruction's own text).
 3. Bump the version table in [`VENDOR`](../VENDOR) in the same commit as the
-   table swap. `Unicode()` reads the vendored `tables15.0.0.go`-generated
+   table swap. `Unicode()` reads the vendored `tables17.0.0.go`-generated
    constant directly (no separate copy to keep in sync in `idna.go` itself),
    but `VENDOR` and the actual tables must never disagree.
 4. Diff the mapping tables for the ranges that changed and, in the consuming

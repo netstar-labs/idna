@@ -41,18 +41,18 @@ prevent.
 
 ## The vendored engine (`internal/x/`)
 
-A pruned, relocated copy of `golang.org/x/net/idna` v0.40.0 and the
-`golang.org/x/text` v0.25.0 packages it needs (`transform`, `unicode/bidi`,
+A pruned, relocated copy of `golang.org/x/net/idna` v0.61.0 and the
+`golang.org/x/text` v0.43.0 packages it needs (`transform`, `unicode/bidi`,
 `unicode/norm`, `secure/bidirule`). Two changes were made to the upstream source
 on import:
 
 1. **Import paths rewritten** — `golang.org/x/{net,text}/… →
    github.com/netstar-labs/idna/internal/x/{net,text}/…`.
-2. **Every pre-Unicode-15 table variant and `//go:build go1.x` selector was
-   deleted** (`tables9…13.0.0.go`, `idna9.0.0.go`, `trie12.0.0.go`, etc., across
-   idna/bidi/norm). Upstream picks its Unicode table by **Go build tag**, not by
+2. **Every table variant but Unicode 17's, and every `//go:build go1.x` selector, was
+   deleted** (upstream v0.61.0/v0.43.0 ship `tables15.0.0.go` under `!go1.27` and
+   `tables17.0.0.go` under `go1.27`, across idna/bidi/norm). Upstream picks its Unicode table by **Go build tag**, not by
    module version — a compiler upgrade alone can silently swap tables even with
-   no dependency change. Deleting every variant but the Unicode-15 one closes
+   no dependency change. Deleting every variant but the Unicode-17 one closes
    that off entirely: `grep -r '//go:build go1' internal/x --include='*.go'` returns
    nothing (scoped to `.go` files — an unscoped grep also matches this sentence), so
    every toolchain that compiles this module compiles the same table.
