@@ -102,13 +102,13 @@ func TestUnicode17Changes(t *testing.T) {
 	for _, tc := range []struct{ in, want string }{
 		// U+1E9E capital sharp s: mapped to "ss" under 15, to U+00DF under 17. The one change
 		// that re-keys a label that was already valid.
-		{"ẞ", "xn--zca"},
-		{"straẞe.de", "xn--strae-oqa.de"},
+		{"\u1e9e", "xn--zca"},
+		{"stra\u1e9ee.de", "xn--strae-oqa.de"},
 		// invisible format characters, rejected under 15, are ignored under 17
-		{"exam⁡ple.com", "example.com"},
-		{"examㅤple.com", "example.com"},
+		{"exam\u2061ple.com", "example.com"},
+		{"exam\u3164ple.com", "example.com"},
 		// U+2260 NOT EQUAL TO, rejected under 15, valid under 17
-		{"≠", "xn--1ch"},
+		{"\u2260", "xn--1ch"},
 	} {
 		got, err := ToASCIIErr(tc.in)
 		if err != nil || got != tc.want {
