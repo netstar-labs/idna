@@ -20,7 +20,7 @@ an in-tree, pruned copy of `golang.org/x/net/idna` and the `golang.org/x/text`
 packages it needs, relocated under `internal/x/` and stripped of every Go-version
 build selector so a toolchain upgrade can no longer swap the active Unicode table
 out from under it. The module has zero external dependencies. It is pinned to
-Unicode **15.0.0**, on purpose, independent of whatever Go version compiles it.
+Unicode **17.0.0**, on purpose, independent of whatever Go version compiles it.
 
 ## The channel nobody else has
 
