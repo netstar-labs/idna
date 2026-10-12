@@ -43,7 +43,7 @@ prevent.
 
 A pruned, relocated copy of `golang.org/x/net/idna` v0.61.0 and the
 `golang.org/x/text` v0.43.0 packages it needs (`transform`, `unicode/bidi`,
-`unicode/norm`, `secure/bidirule`). Two changes were made to the upstream source
+`unicode/norm`, `secure/bidirule`). Three changes were made to the upstream source
 on import:
 
 1. **Import paths rewritten** — `golang.org/x/{net,text}/… →
@@ -56,6 +56,11 @@ on import:
    that off entirely: `grep -r '//go:build go1' internal/x --include='*.go'` returns
    nothing (scoped to `.go` files — an unscoped grep also matches this sentence), so
    every toolchain that compiles this module compiles the same table.
+3. **`unicode16` pinned to `true`** in `net/idna/idna.go`. Upstream derives it from the
+   toolchain's `unicode.Version`, a second, tag-free coupling to the Go release. Under Go 1.24 it
+   ran the pre-16 algorithm over the 17.0.0 tables and stopped enforcing STD3. Pinned, every
+   toolchain runs the same algorithm over the same table: the 2026-10-12 re-vendor checked
+   byte-identical output for every code point under Go 1.24 and 1.27.
 
 Only runtime `.go` files were vendored; upstream's own tests and code generators
 (`gen*.go`, `maketables.go`, `triegen.go` — all `//go:build ignore`) were left

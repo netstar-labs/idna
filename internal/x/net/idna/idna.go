@@ -18,7 +18,6 @@ package idna // import "github.com/netstar-labs/idna/internal/x/net/idna"
 import (
 	"fmt"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
 	"github.com/netstar-labs/idna/internal/x/text/secure/bidirule"
@@ -26,7 +25,11 @@ import (
 	"github.com/netstar-labs/idna/internal/x/text/unicode/norm"
 )
 
-const unicode16 = unicode.Version >= "16.0.0"
+// unicode16 is pinned true: upstream derives it from the toolchain's unicode.Version, which
+// couples the algorithm to the Go release even with every build tag removed. The vendored
+// tables are 17.0.0 (UTS-46 v16+ form), so the v16+ algorithm is the only correct one.
+// netstar-labs local edit; see internal/x/README.md.
+const unicode16 = true
 
 // NOTE: Unlike common practice in Go APIs, the functions will return a
 // sanitized domain name in case of errors. Browsers sometimes use a partially

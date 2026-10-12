@@ -16,7 +16,7 @@ Unicode 17 independent of the Go toolchain** (see below).
 
 Only runtime `.go` files were copied; `*_test.go` and the code generators
 (`gen*.go`, `maketables.go`, `triegen.go`, which are `//go:build ignore` and
-import ungvendored tooling) were excluded. Two edits were then applied:
+import ungvendored tooling) were excluded. Three edits were then applied:
 
 1. Import paths and package import comments were rewritten
    `golang.org/x/{net,text}/… → github.com/netstar-labs/idna/internal/x/{net,text}/…`.
@@ -24,6 +24,13 @@ import ungvendored tooling) were excluded. Two edits were then applied:
    (`//go:build !go1.27`) and `tables17.0.0.go` (`//go:build go1.27`). The
    15.0.0 variants were deleted and the selector stripped from the 17.0.0 files
    that remain, so canonicalization no longer varies by toolchain.
+3. **One local edit:** in `net/idna/idna.go`, `const unicode16 = unicode.Version >= "16.0.0"`
+   is pinned to `true`. Upstream picks the UTS-46 algorithm from the *toolchain's* Unicode
+   version. Under Go 1.24 (Unicode 15) that ran the pre-16 algorithm over the 17.0.0 tables,
+   and STD3 silently stopped rejecting `_dmarc`, because the v16 tables no longer carry the
+   STD3 statuses that algorithm reads. With the tables pinned at 17.0.0, only the v16+
+   algorithm is correct. The next re-vendor must re-apply this edit, or re-check that upstream
+   still reads `unicode.Version`.
 
 The upstream BSD `LICENSE` and `PATENTS` are kept in `internal/x/net` and
 `internal/x/text`.
